@@ -62,123 +62,52 @@ const SideBar: React.FC = () => {
           <span className="menu-title">Menu</span>
           <li>
             <Link to="/">
-              <i className="bi bi-house"></i>
-              Home
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-person-add"
+                viewBox="0 0 16 16"
+              >
+                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
+                <path d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1z" />
+              </svg>
+              Register
             </Link>
           </li>
           <li>
-            <details open>
-              <summary>
-                <i className="bi bi-person"></i>
-                Voters
-              </summary>
-              <ul>
-                <li>
-                  <Link to={"/voters/verify"}>
-                    <i className="bi bi-patch-check"></i>
-                    Verify Voter
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/voters/list">
-                    <i className="bi bi-card-checklist"></i>
-                    List of voters
-                  </Link>
-                </li>
-              </ul>
-            </details>
+            <Link to="/instructions">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-blockquote-left"
+                viewBox="0 0 16 16"
+              >
+                <path d="M2.5 3a.5.5 0 0 0 0 1h11a.5.5 0 0 0 0-1zm5 3a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm-5 3a.5.5 0 0 0 0 1h11a.5.5 0 0 0 0-1zm.79-5.373c.112-.078.26-.17.444-.275L3.524 6c-.122.074-.272.17-.452.287-.18.117-.35.26-.51.428a2.425 2.425 0 0 0-.398.562c-.11.207-.164.438-.164.692 0 .36.072.65.217.873.144.219.385.328.72.328.215 0 .383-.07.504-.211a.697.697 0 0 0 .188-.463c0-.23-.07-.404-.211-.521-.137-.121-.326-.182-.568-.182h-.282c.024-.203.065-.37.123-.498a1.38 1.38 0 0 1 .252-.37 1.94 1.94 0 0 1 .346-.298zm2.167 0c.113-.078.262-.17.445-.275L5.692 6c-.122.074-.272.17-.452.287-.18.117-.35.26-.51.428a2.425 2.425 0 0 0-.398.562c-.11.207-.164.438-.164.692 0 .36.072.65.217.873.144.219.385.328.72.328.215 0 .383-.07.504-.211a.697.697 0 0 0 .188-.463c0-.23-.07-.404-.211-.521-.137-.121-.326-.182-.568-.182h-.282a1.75 1.75 0 0 1 .118-.492c.058-.13.144-.254.257-.375a1.94 1.94 0 0 1 .346-.3z" />
+              </svg>
+              Instructions
+            </Link>
           </li>
           <li>
-            <details open>
-              <summary>
-                <i className="bi bi-person-circle"></i>
-                Candidates
-              </summary>
-              <ul>
-                <li>
-                  <Link to="candidates/verify">
-                    <i className="bi bi-patch-check"></i>
-                    Verify Candidate
-                  </Link>
-                </li>
-                <li>
-                  <Link to="candidates/list">
-                    <i className="bi bi-card-checklist"></i>
-                    List of Candidates
-                  </Link>
-                </li>
-              </ul>
-            </details>
-          </li>
-          <li>
-            <details open>
-              <summary>
-                <i className="bi bi-person-circle"></i>
-                Admins
-              </summary>
-              <ul>
-                <li>
-                  <Link to="admins/add">
-                    <i className="bi bi-patch-check"></i>
-                    Add An Admin
-                  </Link>
-                </li>
-                <li>
-                  <Link to="admins/list">
-                    <i className="bi bi-card-checklist"></i>
-                    List of Admins
-                  </Link>
-                </li>
-              </ul>
-            </details>
-          </li>
-          <li>
-            <details open>
-              <summary>
-                <i className="bi bi-box-seam"></i>
-                Elections
-              </summary>
-              <ul>
-                <li>
-                  <Link to="elections/going">
-                    <i className="bi bi-clock-history"></i>
-                    Ongoing Elections
-                  </Link>
-                </li>
-                <li>
-                  <Link to="elections/statistics">
-                    <i className="bi bi-graph-up"></i>
-                    Election Statistics
-                  </Link>
-                </li>
-                <li>
-                  <Link to="elections/all">
-                    <i className="bi bi-list-nested"></i>
-                    All Elections
-                  </Link>
-                </li>
-                <li>
-                  <Link to="elections/manage">
-                    <i className="bi bi-gear"></i>
-                    Manage Elections
-                  </Link>
-                </li>
-              </ul>
-            </details>
-          </li>
-
-          <li>
-            <button
-              className="text-warning"
-              onClick={() => {
-                localStorage.removeItem("private_key");
-                // setKey(null);
-                redirect("/login");
-              }}
-            >
-              <i className="bi bi-box-arrow-in-left"></i>
-              LogOut
-            </button>
+            <Link to="/help">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-question-lg"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4.475 5.458c-.284 0-.514-.237-.47-.517C4.28 3.24 5.576 2 7.825 2c2.25 0 3.767 1.36 3.767 3.215 0 1.344-.665 2.288-1.79 2.973-1.1.659-1.414 1.118-1.414 2.01v.03a.5.5 0 0 1-.5.5h-.77a.5.5 0 0 1-.5-.495l-.003-.2c-.043-1.221.477-2.001 1.645-2.712 1.03-.632 1.397-1.135 1.397-2.028 0-.979-.758-1.698-1.926-1.698-1.009 0-1.71.529-1.938 1.402-.066.254-.278.461-.54.461h-.777ZM7.496 14c.622 0 1.095-.474 1.095-1.09 0-.618-.473-1.092-1.095-1.092-.606 0-1.087.474-1.087 1.091S6.89 14 7.496 14"
+                />
+              </svg>
+              Help
+            </Link>
           </li>
         </ul>
       </div>

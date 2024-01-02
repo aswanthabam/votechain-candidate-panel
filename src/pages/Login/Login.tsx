@@ -16,7 +16,7 @@ export const Login = () => {
     var k1 = generateRandomKey(10, 15);
     var k2 = generateRandomKey(400, 500);
     var perms = "function";
-    var code = `${k1}|${k2}|${perms}`;
+    var code = `${k1}|${k2}|${perms}|candidate.register`;
     var connection_count = 0;
     setCode(code);
     var socket = new WebSocket(

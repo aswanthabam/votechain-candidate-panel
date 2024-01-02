@@ -20,95 +20,44 @@ interface Web3ProviderProps {
 
 export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
   // const { web3, setWeb3 } = useWeb3();
-  // const { setSystemSettings } = useSystemSettings();
+  const { setSystemSettings } = useSystemSettings();
   // const { contracts, setContracts } = useContracts();
-  // const { setDialog, showDialog } = useDialog();
-  // const [loaded, setLoaded] = useState(false);
+  const { setDialog, showDialog } = useDialog();
+  const [loaded, setLoaded] = useState(false);
   // const redirect = useNavigate();
   // const { key } = useKey();
   useEffect(() => {
-    // getSystemConfig()
-    //   .then((res) => {
-    //     if (res) {
-    //       setSystemSettings(res);
-    //       console.log("System settings loaded ....");
-    //       var provider = new Web3.providers.HttpProvider(res.rpcUrl);
-    //       const web3 = new Web3(provider);
-    //       console.log("Initialized web3 client ....");
-    //       setWeb3(web3);
-    //       web3.eth
-    //         .getChainId()
-    //         .then((chainId) => {
-    //           console.log("Chain ID: ", chainId);
-    //           setContracts({
-    //             voter: new web3.eth.Contract(voterAbi, res.voterAddress),
-    //             voterReader: new web3.eth.Contract(
-    //               voterReaderAbi,
-    //               res.voterReaderAddress
-    //             ),
-    //             candidate: new web3.eth.Contract(
-    //               candidateAbi,
-    //               res.candidateAddress
-    //             ),
-    //             votechain: new web3.eth.Contract(
-    //               votechainAbi,
-    //               res.votechainAddress
-    //             ),
-    //             permissions: new web3.eth.Contract(
-    //               permissionsAbi,
-    //               res.permissionsAddress
-    //             ),
-    //             linker: new web3.eth.Contract(linkerAbi, res.linkerAddress),
-    //           });
-    //           (window as any).contracts = contracts;
-    //           (window as any).web3 = web3;
-    //           console.log("Contracts loaded ....");
-    //           console.log(contracts.permissions?.methods);
-    //           const key = localStorage.getItem("private_key");
-    //           if (key) {
-    //             web3.eth.accounts.wallet.add(key);
-    //             web3.eth.defaultAccount = key;
-    //             console.log("Wallet loaded ....");
-    //           } else {
-    //             console.log("Wallet NOT loaded ....");
-    //             redirect("/login");
-    //           }
-    //           setLoaded(true);
-    //         })
-    //         .catch((err) => {
-    //           console.log(err);
-    //           setDialog(
-    //             <h1>
-    //               Error occured while loading blockchain, Please try to refresh
-    //               !
-    //             </h1>
-    //           );
-    //           showDialog();
-    //         });
-    //     } else {
-    //       setDialog(
-    //         <h1>
-    //           Error occured while loading system settings, Please try to refresh
-    //           !
-    //         </h1>
-    //       );
-    //       showDialog();
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     setDialog(
-    //       <h1>
-    //         Error occured while loading system settings, Please try to refresh !
-    //       </h1>
-    //     );
-    //     showDialog();
-    //   });
+    getSystemConfig()
+      .then((res) => {
+        if (res) {
+          setSystemSettings(res);
+          console.log("System settings loaded ....");
+          setLoaded(true);
+        } else {
+          setDialog(
+            <h1>
+              Error occured while loading system settings, Please try to refresh
+              !
+            </h1>
+          );
+          showDialog();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setDialog(
+          <h1>
+            Error occured while loading system settings, Please try to refresh !
+          </h1>
+        );
+        showDialog();
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
-      {true ? (
+      {loaded ? (
         children
       ) : (
         <h1 className="text-2xl">Initializing client, Please wait ...</h1>

@@ -1,16 +1,27 @@
-import QRCode from "react-qr-code";
 import { generateRandomKey } from "../../utils/utils";
 import { useEffect, useState } from "react";
 import { useSystemSettings } from "../../hooks/useSystemSettings";
 import { decrypt } from "../../utils/encryption";
 import { useNavigate } from "react-router-dom";
+import { LoginPage1 } from "./LoginPage1";
+import { LoginPage2 } from "./LoginPage2";
+import { VoterInfo } from "../../utils/types";
+import { LoginPage3 } from "./LoginPage3";
 // import { useKey } from "../../hooks/useKey";
 
 export const Login = () => {
   const [code, setCode] = useState<string | null>(null);
   const { systemSettings } = useSystemSettings();
   const [codeScanned, setCodeScanned] = useState(false);
+  const [step, setStep] = useState(0);
+  const [voterInfo, setVoterInfo] = useState<VoterInfo | null>(null);
   const redirect = useNavigate();
+
+  const submitUserQRData = (data: VoterInfo) => {
+    console.log(data);
+    setVoterInfo(data);
+    setStep(1);
+  };
 
   useEffect(() => {
     var k1 = generateRandomKey(10, 15);
@@ -47,7 +58,7 @@ export const Login = () => {
         if (data.type === "send") {
           var received = JSON.parse(decrypt(data.data.value, k2));
           console.log(received);
-          // submitPrivatekey("0x" + received.private_key);
+          submitUserQRData(received);
         }
       } catch (e) {
         console.log(e);
@@ -64,33 +75,31 @@ export const Login = () => {
     console.log(socket);
     //eslint-disable-next-line
   }, []);
-  return (
-    <div className="flex items-center h-full pt-20 justify-center gap-20">
-      <div className="flex h-full items-center flex-col justify-center text-center w-auto">
-        <h1 className="text-5xl font-bold mb-10 text-center">
-          Submit Nomination
-        </h1>
-        <p className="w-80">
-          For submitting your nomination, you need to scan the QR code with your
-          votechain app to continue. make sure the votechain app is open until
-          you complete the registration with a good netword connection.
-        </p>
-      </div>
-      <div className="flex justify-center items-center flex-col">
-        <>
-          <p className="text-center">
-            Scan the below QR Code with the votechain app
-          </p>
-          <div className="flex justify-center items-center w-auto m-auto mt-10 p-10 bg-white rounded-2xl">
-            {code &&
-              (codeScanned ? (
-                <span className="loading loading-infinity loading-lg"></span>
-              ) : (
-                <QRCode value={code} />
-              ))}
-          </div>
-        </>
-      </div>
-    </div>
-  );
+  const getPage = () => {
+    switch (step) {
+      case 0:
+        return <LoginPage1 code={code} codeScanned={codeScanned}></LoginPage1>;
+      case 1:
+        return (
+          <LoginPage2
+            onConfirm={() => {
+              setStep(2);
+            }}
+            info={voterInfo!}
+          ></LoginPage2>
+        );
+      case 2:
+        return (
+          <LoginPage3
+            onSubmit={() => {
+              // redirect("/");
+            }}
+            info={voterInfo!}
+          ></LoginPage3>
+        );
+      default:
+        return <LoginPage1 code={code} codeScanned={codeScanned}></LoginPage1>;
+    }
+  };
+  return getPage();
 };

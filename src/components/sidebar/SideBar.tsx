@@ -1,10 +1,7 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-// import { useKey } from "../../hooks/useKey";
+import { Link } from "react-router-dom";
 
 const SideBar: React.FC = () => {
-  const redirect = useNavigate();
-  // const { setKey } = useKey();
   return (
     <div className="drawer w-1/12">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />

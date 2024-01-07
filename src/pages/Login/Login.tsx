@@ -1,11 +1,12 @@
 import { generateRandomKey } from "../../utils/utils";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSystemSettings } from "../../hooks/useSystemSettings";
 import { decrypt } from "../../utils/encryption";
 import { LoginPage1 } from "./LoginPage1";
 import { LoginPage2 } from "./LoginPage2";
-import { VoterInfo } from "../../utils/types";
-import { LoginPage3 } from "./LoginPage3";
+import { Constituency, District, State, VoterInfo } from "../../utils/types";
+import { LoginPage3 } from "./LoginPage4";
+import { getStates } from "../../services/api_services/location";
 
 export const Login = () => {
   const [code, setCode] = useState<string | null>(null);
@@ -13,6 +14,19 @@ export const Login = () => {
   const [codeScanned, setCodeScanned] = useState(false);
   const [step, setStep] = useState(0);
   const [voterInfo, setVoterInfo] = useState<VoterInfo | null>(null);
+  const [states, setStates] = React.useState<State[]>([]);
+  const [districts, setDistricts] = React.useState<District[]>([]);
+  const [constituencies, setConstituencies] = React.useState<Constituency[]>(
+    []
+  );
+  const [constituency, setConstituency] = React.useState<Constituency | null>(
+    null
+  );
+  useEffect(() => {
+    getStates().then((res) => {
+      setStates(res ? res : []);
+    });
+  }, []);
 
   const submitUserQRData = (data: VoterInfo) => {
     console.log(data);
@@ -79,19 +93,27 @@ export const Login = () => {
       case 1:
         return (
           <LoginPage2
-            onConfirm={() => {
+            onSubmit={() => {
               setStep(2);
             }}
             info={voterInfo!}
+            states={states}
+            districts={districts}
+            constituencies={constituencies}
+            setDistricts={setDistricts}
+            setConstituencies={setConstituencies}
+            setConstituency={setConstituency}
+            constituency={constituency}
           ></LoginPage2>
         );
       case 2:
         return (
           <LoginPage3
-            onSubmit={() => {
+            onConfirm={() => {
               // redirect("/");
             }}
             info={voterInfo!}
+            constituency={constituency!}
           ></LoginPage3>
         );
       default:

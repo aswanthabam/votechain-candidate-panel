@@ -1,147 +1,94 @@
 import React from "react";
-import { VoterInfo } from "../../utils/types";
+import { Constituency, District, State, VoterInfo } from "../../utils/types";
+import {
+  getConstituencies,
+  getDistricts,
+} from "../../services/api_services/location";
 
 interface LoginPage2Props {
   info: VoterInfo;
-  onConfirm: () => void;
+  states: State[];
+  districts: District[];
+  constituencies: Constituency[];
+  constituency: Constituency | null;
+  setDistricts: React.Dispatch<React.SetStateAction<District[]>>;
+  setConstituencies: React.Dispatch<React.SetStateAction<Constituency[]>>;
+  setConstituency: React.Dispatch<React.SetStateAction<Constituency | null>>;
+  onSubmit: () => void;
 }
 
-export const LoginPage2: React.FC<LoginPage2Props> = ({ info, onConfirm }) => {
+export const LoginPage2: React.FC<LoginPage2Props> = ({
+  info,
+  onSubmit,
+  states,
+  districts,
+  constituencies,
+  setDistricts,
+  setConstituencies,
+  setConstituency,
+  constituency,
+}) => {
   console.log(info);
   return (
     <div className="flex flex-col items-center h-full pt-20 justify-start gap-10 w-full pb-10">
-      <h1 className="text-5xl font-bold text-center">Confirm Your Details</h1>
+      <h1 className="text-5xl font-bold text-center">Select Constituency</h1>
       <p>
-        If there is any mistake, you want to change the details by going to
-        nearest office,
+        Here you want to select the constituency you want to register as a
+        candidate.
       </p>
-      <div className="flex flex-col items-start justify-start gap-5 w-full">
-        <h1 className="font-bold underline underline-offset-8">
-          Personal Details
-        </h1>
-        <div className="overflow-x-auto w-full gap-5 flex-col flex">
-          <table className="table w-full table-zebra">
-            <tbody>
-              <tr>
-                <th>Aadhar Number</th>
-                <td>{info.aadhar_number}</td>
-              </tr>
-              <tr>
-                <th>First Name</th>
-                <td>{info.personal_info.first_name}</td>
-              </tr>
-              <tr>
-                <th>Middle Name</th>
-                <td>{info.personal_info.middle_name}</td>
-              </tr>
-              <tr>
-                <th>Last Name</th>
-                <td>{info.personal_info.last_name}</td>
-              </tr>
-              <tr>
-                <th>Date Of Birth</th>
-                <td>{new Date(info.personal_info.dob).toDateString()}</td>
-              </tr>
-              <tr>
-                <th>Phone Number</th>
-                <td>{info.contact_info.phone}</td>
-              </tr>
-              <tr>
-                <th>Email ID</th>
-                <td>{info.contact_info.email}</td>
-              </tr>
-              <tr>
-                <th>Married</th>
-                <td>{info.married ? "Yes" : "No"}</td>
-              </tr>
-              <tr>
-                <th>Orphan</th>
-                <td>{info.orphan ? "Yes" : "No"}</td>
-              </tr>
-            </tbody>
-          </table>
-          <h1 className="font-bold underline underline-offset-8">
-            Permenant Address
-          </h1>
-          <table className="table w-full table-zebra">
-            <tbody>
-              <tr>
-                <th>State</th>
-                <td>{info.permenant_address.state}</td>
-              </tr>
-              <tr>
-                <th>District</th>
-                <td>{info.permenant_address.district}</td>
-              </tr>
-              <tr>
-                <th>Locality</th>
-                <td>{info.permenant_address.locality}</td>
-              </tr>
-              <tr>
-                <th>Ward</th>
-                <td>{info.permenant_address.ward}</td>
-              </tr>
-              <tr>
-                <th>House Name</th>
-                <td>{info.permenant_address.house_name}</td>
-              </tr>
-              <tr>
-                <th>House Number</th>
-                <td>{info.permenant_address.house_number}</td>
-              </tr>
-              <tr>
-                <th>Street</th>
-                <td>{info.permenant_address.street}</td>
-              </tr>
-              <tr>
-                <th>Pincode</th>
-                <td>{info.permenant_address.pincode}</td>
-              </tr>
-            </tbody>
-          </table>
-          <h1 className="font-bold underline underline-offset-8">
-            Residential Address
-          </h1>
-          <table className="table w-full table-zebra">
-            <tbody>
-              <tr>
-                <th>State</th>
-                <td>{info.current_address.state}</td>
-              </tr>
-              <tr>
-                <th>District</th>
-                <td>{info.current_address.district}</td>
-              </tr>
-              <tr>
-                <th>Locality</th>
-                <td>{info.current_address.locality}</td>
-              </tr>
-              <tr>
-                <th>Ward</th>
-                <td>{info.current_address.ward}</td>
-              </tr>
-              <tr>
-                <th>House Name</th>
-                <td>{info.current_address.house_name}</td>
-              </tr>
-              <tr>
-                <th>House Number</th>
-                <td>{info.current_address.house_number}</td>
-              </tr>
-              <tr>
-                <th>Street</th>
-                <td>{info.current_address.street}</td>
-              </tr>
-              <tr>
-                <th>Pincode</th>
-                <td>{info.current_address.pincode}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <button onClick={onConfirm} className="btn btn-primary mb-10">
-          Confirm
-        </button>
+      <div className="flex flex-col items-center justify-start gap-5 w-full">
+        <select
+          onChange={(e) => {
+            getDistricts(null, e.target.value).then((res) => {
+              setDistricts(res ? res : []);
+            });
+          }}
+          className="select select-bordered w-full max-w-xs"
+        >
+          <option disabled selected>
+            Select State *
+          </option>
+          {states.map((state) => (
+            <option value={state.id}>{state.name}</option>
+          ))}
+        </select>
+        <select
+          onChange={(e) => {
+            getConstituencies(null, e.target.value).then((res) => {
+              setConstituencies(res ? res : []);
+            });
+          }}
+          className="select select-bordered w-full max-w-xs"
+        >
+          <option disabled selected>
+            Select District *
+          </option>
+          {districts.map((state) => (
+            <option value={state.id}>{state.name}</option>
+          ))}
+        </select>
+        <select
+          onChange={(e) => {
+            setConstituency(
+              constituencies.find(
+                (constituency) => constituency.id === e.target.value
+              ) ?? null
+            );
+          }}
+          className="select select-bordered w-full max-w-xs"
+        >
+          <option disabled selected>
+            Select Constituency *
+          </option>
+          {constituencies.map((state) => (
+            <option value={state.id}>{state.name}</option>
+          ))}
+        </select>
+        {constituency && (
+          <button className="btn btn-primary mb-10" onClick={onSubmit}>
+            Submit
+          </button>
+        )}
       </div>
     </div>
   );

@@ -6,7 +6,6 @@ import { LoginPage1 } from "./LoginPage1";
 import { LoginPage2 } from "./LoginPage2";
 import { VoterInfo } from "../../utils/types";
 import { LoginPage3 } from "./LoginPage3";
-// import { useKey } from "../../hooks/useKey";
 
 export const Login = () => {
   const [code, setCode] = useState<string | null>(null);

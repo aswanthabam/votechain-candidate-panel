@@ -3,7 +3,6 @@ import { generateRandomKey } from "../../utils/utils";
 import { useEffect, useState } from "react";
 import { useSystemSettings } from "../../hooks/useSystemSettings";
 import { decrypt } from "../../utils/encryption";
-import { useNavigate } from "react-router-dom";
 import { useWeb3 } from "../../hooks/useWeb3";
 import { useContracts } from "../../hooks/useContracts";
 import { useDialog } from "../../hooks/useDialog";
@@ -16,7 +15,7 @@ export const AddAdmin = () => {
   const { contracts } = useContracts();
   const { setDialog, showDialog } = useDialog();
   const [privateKeyInput, setPrivateKeyInput] = useState<string | null>();
-  const redirect = useNavigate();
+  // const redirect = useNavigate();
   const { web3 } = useWeb3();
   const submitPrivatekey = (key: string, name: string) => {
     (contracts.permissions?.methods.addAdmin as any)(name, key, 1)

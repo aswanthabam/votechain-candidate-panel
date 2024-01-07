@@ -1,12 +1,7 @@
 import React, { useEffect } from "react";
 import { useContracts } from "../../hooks/useContracts";
 import { ContractExecutionError } from "web3";
-import {
-  AdminInfo,
-  VoterAccount,
-  adminInfoFromList,
-  voterAccountFromList,
-} from "../../utils/types";
+import { AdminInfo, adminInfoFromList } from "../../utils/types";
 import { useDialog } from "../../hooks/useDialog";
 import { useWeb3 } from "../../hooks/useWeb3";
 // import { VerifyVoterInfoPage } from "./VerifyVoterInfoPage";

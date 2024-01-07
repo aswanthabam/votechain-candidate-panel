@@ -2,7 +2,6 @@ import { generateRandomKey } from "../../utils/utils";
 import { useEffect, useState } from "react";
 import { useSystemSettings } from "../../hooks/useSystemSettings";
 import { decrypt } from "../../utils/encryption";
-import { useNavigate } from "react-router-dom";
 import { LoginPage1 } from "./LoginPage1";
 import { LoginPage2 } from "./LoginPage2";
 import { VoterInfo } from "../../utils/types";
@@ -15,7 +14,6 @@ export const Login = () => {
   const [codeScanned, setCodeScanned] = useState(false);
   const [step, setStep] = useState(0);
   const [voterInfo, setVoterInfo] = useState<VoterInfo | null>(null);
-  const redirect = useNavigate();
 
   const submitUserQRData = (data: VoterInfo) => {
     console.log(data);

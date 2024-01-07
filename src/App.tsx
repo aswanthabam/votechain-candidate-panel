@@ -5,7 +5,6 @@ import DialogStateProvider from "./hooks/useDialog";
 import SystemSettingsProvider from "./hooks/useSystemSettings";
 import Web3StateProvider from "./hooks/useWeb3";
 import MainLayer from "./layers/mainlayer";
-import Home from "./pages/Home/Home";
 import { Login } from "./pages/Login/Login";
 
 function App() {

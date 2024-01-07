@@ -1,6 +1,4 @@
-import React, { useEffect } from "react";
-import { useContracts } from "../../hooks/useContracts";
-import { useDialog } from "../../hooks/useDialog";
+import { useEffect } from "react";
 
 const Home = () => {
   useEffect(() => {}, []);

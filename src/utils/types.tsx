@@ -14,6 +14,15 @@ export type SystemConfig = {
   websocketServer: string;
 };
 
+export type Election = {
+  id: number;
+  name: string;
+  description: string;
+  start_date: Date;
+  end_date: Date;
+  constituency: string;
+};
+
 export type Contracts = {
   voter: Contract<any> | null;
   voterReader: Contract<typeof voterReaderAbi> | null;
@@ -21,6 +30,34 @@ export type Contracts = {
   votechain: Contract<any> | null;
   permissions: Contract<any> | null;
   linker: Contract<any> | null;
+};
+
+export type State = {
+  id: string;
+  code: string;
+  name: string;
+  no_of_districts: number;
+};
+
+export type District = {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  image: string | null;
+  link: string | null;
+  state: string;
+  no_of_constituencies: number;
+};
+
+export type Constituency = {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  image: string | null;
+  link: string | null;
+  district: string;
 };
 
 export type VoterPersonalInfo = {
@@ -54,6 +91,7 @@ export type VoterInfo = {
   current_address: VoterAddressInfo;
   married: boolean;
   orphan: boolean;
+  constituency: string;
 };
 
 export type VoterRegistration = {
@@ -108,6 +146,7 @@ export function voterInfoFromList(list: any[]): VoterInfo {
     current_address: voterAddressInfoFromList(list[4]),
     married: list[5],
     orphan: list[6],
+    constituency: list[7],
   };
 }
 export function voterRegistrationFromList(
@@ -137,7 +176,7 @@ export function voterAccountFromList(list: any[]): VoterAccount | null {
 }
 
 export function adminInfoFromList(list: any[]): AdminInfo | null {
-  if (list[1] == 0) {
+  if (list[1] === 0) {
     return null;
   }
   var role;
@@ -163,5 +202,19 @@ export function adminInfoFromList(list: any[]): AdminInfo | null {
   return {
     name: list[0],
     role: role,
+  };
+}
+
+export function electionFromList(list: any[]): Election | null {
+  if (list[1] === 0 || list[1] === "") {
+    return null;
+  }
+  return {
+    id: parseInt((list[0] as BigInt).toString()),
+    name: list[1],
+    description: list[2],
+    start_date: new Date(parseInt((list[3] as BigInt).toString())),
+    end_date: new Date(parseInt((list[4] as BigInt).toString())),
+    constituency: list[5],
   };
 }

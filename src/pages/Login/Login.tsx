@@ -15,7 +15,6 @@ import {
 import { LoginPage3 } from "./LoginPage4";
 import { getStates } from "../../services/api_services/location";
 import { useContracts } from "../../hooks/useContracts";
-import { useNavigate } from "react-router-dom";
 import { SuccessLogin } from "./SuccessLogin";
 import { FailLogin } from "./FailLogin";
 
@@ -35,10 +34,9 @@ export const Login = () => {
   );
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [k1, setK1] = useState<string | null>(null);
-  const [k2, setK2] = useState<string | null>(null);
+  const [, setK2] = useState<string | null>(null);
   const { contracts } = useContracts();
   const [election, setElection] = useState<Election | null>(null);
-  const redirect = useNavigate();
 
   useEffect(() => {
     getStates().then((res) => {

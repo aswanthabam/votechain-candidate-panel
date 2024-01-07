@@ -19,7 +19,7 @@ interface Web3ProviderProps {
 }
 
 export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
-  const { web3, setWeb3 } = useWeb3();
+  const { setWeb3 } = useWeb3();
   const { setSystemSettings } = useSystemSettings();
   const { contracts, setContracts } = useContracts();
   const { setDialog, showDialog } = useDialog();

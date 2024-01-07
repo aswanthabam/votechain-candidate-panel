@@ -15,7 +15,7 @@ export type SystemConfig = {
 };
 
 export type Election = {
-  id: string;
+  id: number;
   name: string;
   description: string;
   start_date: Date;
@@ -210,7 +210,7 @@ export function electionFromList(list: any[]): Election | null {
     return null;
   }
   return {
-    id: list[0],
+    id: parseInt((list[0] as BigInt).toString()),
     name: list[1],
     description: list[2],
     start_date: new Date(parseInt((list[3] as BigInt).toString())),

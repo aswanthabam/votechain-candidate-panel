@@ -1,5 +1,11 @@
 import React from "react";
-import { Constituency, District, State, VoterInfo } from "../../utils/types";
+import {
+  Constituency,
+  District,
+  Election,
+  State,
+  VoterInfo,
+} from "../../utils/types";
 import {
   getConstituencies,
   getDistricts,
@@ -10,11 +16,13 @@ interface LoginPage2Props {
   states: State[];
   districts: District[];
   constituencies: Constituency[];
-  constituency: Constituency | null;
+  // constituency: Constituency | null;
   setDistricts: React.Dispatch<React.SetStateAction<District[]>>;
   setConstituencies: React.Dispatch<React.SetStateAction<Constituency[]>>;
   setConstituency: React.Dispatch<React.SetStateAction<Constituency | null>>;
+  election: Election | null;
   onSubmit: () => void;
+  onChange: (constituency: Constituency) => void;
 }
 
 export const LoginPage2: React.FC<LoginPage2Props> = ({
@@ -26,7 +34,8 @@ export const LoginPage2: React.FC<LoginPage2Props> = ({
   setDistricts,
   setConstituencies,
   setConstituency,
-  constituency,
+  election,
+  onChange,
 }) => {
   console.log(info);
   return (
@@ -69,11 +78,12 @@ export const LoginPage2: React.FC<LoginPage2Props> = ({
         </select>
         <select
           onChange={(e) => {
-            setConstituency(
+            var c =
               constituencies.find(
                 (constituency) => constituency.id === e.target.value
-              ) ?? null
-            );
+              ) ?? null;
+            setConstituency(c);
+            onChange(c!);
           }}
           className="select select-bordered w-full max-w-xs"
         >
@@ -84,10 +94,21 @@ export const LoginPage2: React.FC<LoginPage2Props> = ({
             <option value={state.id}>{state.name}</option>
           ))}
         </select>
-        {constituency && (
-          <button className="btn btn-primary mb-10" onClick={onSubmit}>
-            Submit
-          </button>
+        {election && (
+          <>
+            <h1 className="text-2xl font-bold text-center">
+              Active Election in this constituency
+            </h1>
+            <h2>
+              {election.name} (ID : {election.id.toString()})
+            </h2>
+            <h2>About Election : {election.description}</h2>
+            <h2>Start On : {election.start_date.toLocaleString()}</h2>
+            <h2>End On : {election.end_date.toLocaleString()}</h2>
+            <button className="btn btn-primary mb-10" onClick={onSubmit}>
+              Submit
+            </button>
+          </>
         )}
       </div>
     </div>

@@ -20,8 +20,8 @@ interface LoginPage2Props {
   setDistricts: React.Dispatch<React.SetStateAction<District[]>>;
   setConstituencies: React.Dispatch<React.SetStateAction<Constituency[]>>;
   setConstituency: React.Dispatch<React.SetStateAction<Constituency | null>>;
-  election: Election | null;
-  onSubmit: () => void;
+  election: Election[];
+  onSubmit: (e: Election) => void;
   onChange: (constituency: Constituency) => void;
 }
 
@@ -99,15 +99,24 @@ export const LoginPage2: React.FC<LoginPage2Props> = ({
             <h1 className="text-2xl font-bold text-center">
               Active Election in this constituency
             </h1>
-            <h2>
-              {election.name} (ID : {election.id.toString()})
-            </h2>
-            <h2>About Election : {election.description}</h2>
-            <h2>Start On : {election.start_date.toLocaleString()}</h2>
-            <h2>End On : {election.end_date.toLocaleString()}</h2>
-            <button className="btn btn-primary mb-10" onClick={onSubmit}>
-              Submit
-            </button>
+            {election.map((election) => (
+              <div className={""}>
+                <h2>
+                  {election.name} (ID : {election.id.toString()})
+                </h2>
+                <h2>About Election : {election.description}</h2>
+                <h2>Start On : {election.start_date.toLocaleString()}</h2>
+                <h2>End On : {election.end_date.toLocaleString()}</h2>
+                <button
+                  className="btn btn-primary mb-10"
+                  onClick={() => {
+                    onSubmit(election);
+                  }}
+                >
+                  Submit
+                </button>
+              </div>
+            ))}
           </>
         )}
       </div>

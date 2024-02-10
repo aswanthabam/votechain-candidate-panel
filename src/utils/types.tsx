@@ -10,8 +10,8 @@ export type SystemConfig = {
   linkerAddress: string;
   rpcUrl: string;
   wsUrl: string;
-  localUrl: string;
   websocketServer: string;
+  localServer: string;
 };
 
 export type Election = {

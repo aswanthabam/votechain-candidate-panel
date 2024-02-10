@@ -1,11 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import SideBar from "../components/sidebar/SideBar";
 import { Web3Provider } from "./web3layer";
 import { DialogLayer } from "./dialoglayer";
+import { useSystemSettings } from "../hooks/useSystemSettings";
+import axios from "axios";
 // import { KeyProvider } from "./keyprovider";
 
 const MainLayer: React.FC = () => {
+  const { setSystemSettings } = useSystemSettings();
+  useEffect(() => {
+    console.log("MainLayer mounted");
+    axios
+      .get("https://votechain-backend.vercel.app/api/system/config")
+      .then((res) => {
+        console.log("System settings", res.data.data[0]);
+        setSystemSettings(res.data.data[0]);
+      });
+    return () => {
+      console.log("MainLayer unmounted");
+    };
+  }, []);
   return (
     <div className="flex h-full w-screen p-0 m-0 overflow-hidden">
       <SideBar />

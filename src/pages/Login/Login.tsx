@@ -17,6 +17,7 @@ import { getStates } from "../../services/api_services/location";
 import { useContracts } from "../../hooks/useContracts";
 import { SuccessLogin } from "./SuccessLogin";
 import { FailLogin } from "./FailLogin";
+import axios from "axios";
 
 export const Login = () => {
   const [code, setCode] = useState<string | null>(null);
@@ -36,7 +37,11 @@ export const Login = () => {
   const [k1, setK1] = useState<string | null>(null);
   const [, setK2] = useState<string | null>(null);
   const { contracts } = useContracts();
-  const [election, setElection] = useState<Election | null>(null);
+  const [election, setElection] = useState<Election[]>([]);
+  const [selectedElection, setSelectedElection] = useState<Election | null>(
+    null
+  );
+  const [, setName] = useState<string | null>(null);
 
   useEffect(() => {
     getStates().then((res) => {
@@ -45,8 +50,10 @@ export const Login = () => {
   }, []);
 
   const onSubmit = () => {
+    console.log("Submitting data");
+    console.log("SElected Election", selectedElection);
     var data = {
-      election: election,
+      election: selectedElection,
     };
     var _data = JSON.stringify({
       token: k1,
@@ -67,10 +74,10 @@ export const Login = () => {
 
     if (elections.length === 0) {
       alert("No elections found for this constituency.");
-      setElection(null);
+      setElection([]);
       return;
     }
-    var elc = elections[0];
+    var elc = elections as Election[];
     console.log("Nominatable elections: ", elc);
     setElection(elc);
     // setStep(2);
@@ -79,6 +86,15 @@ export const Login = () => {
   const submitUserQRData = (data: VoterInfo) => {
     console.log(data);
     setVoterInfo(data);
+    console.log(data);
+    (window as any).voterInfo = data;
+    setName(
+      data.personal_info.first_name +
+        " " +
+        data.personal_info.middle_name +
+        " " +
+        data.personal_info.last_name
+    );
     setStep(1);
   };
 
@@ -87,8 +103,9 @@ export const Login = () => {
     var k2 = generateRandomKey(400, 500);
     setK1(k1);
     setK2(k2);
+    var clientId = "myconstantclientIDforcandidatepanel";
     var perms = "function";
-    var code = `${k1}|${k2}|${perms}|candidate.register.stay`;
+    var code = `${k1}|${k2}|${perms}|candidate.register.stay.${clientId}.candidate_profile`;
     var connection_count = 0;
     setCode(code);
     var socket = new WebSocket(
@@ -106,6 +123,7 @@ export const Login = () => {
       console.log("Received message:", event);
       try {
         var data = JSON.parse(event.data);
+        console.log("Received data: ", data);
         if (data.type === "connect_response") {
           if (data.status === "success") {
             console.log("Connected room.");
@@ -120,7 +138,22 @@ export const Login = () => {
         if (data.type == "result") {
           if (data.data.status == "success") {
             setStep(10);
-            localStorage.setItem("registration_hash", data.data.value);
+            console.log("Access key received: ", data.data.access_key);
+            localStorage.setItem("access_key", data.data.access_key);
+
+            console.log(data.data.name);
+            axios
+              .post(
+                systemSettings?.localServer +
+                  "/api/candidate/register/?ACCESS_KEY=" +
+                  data.data.access_key,
+                {
+                  name: data.data.name,
+                }
+              )
+              .then((res) => {
+                console.log(res);
+              });
           } else {
             setStep(11);
             alert("Error occured while registering, please try again.");
@@ -154,7 +187,8 @@ export const Login = () => {
       case 1:
         return (
           <LoginPage2
-            onSubmit={() => {
+            onSubmit={(e: Election) => {
+              setSelectedElection(e);
               setStep(2);
             }}
             onChange={onConstitutionSelect}

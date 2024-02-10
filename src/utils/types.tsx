@@ -10,8 +10,8 @@ export type SystemConfig = {
   linkerAddress: string;
   rpcUrl: string;
   wsUrl: string;
-  localUrl: string;
   websocketServer: string;
+  localServer: string;
 };
 
 export type Election = {
@@ -110,7 +110,32 @@ export type AdminInfo = {
   name: string;
   role: string;
 };
-
+export type CandidateProfile = {
+  profileId: string;
+  candidateId: string;
+  name: string;
+  about: string | null;
+  photo: string | null;
+  education: Education[];
+  experience: Experience[];
+  documents: Documents[];
+};
+export type Documents = {
+  title: string;
+  link: string;
+};
+export type Education = {
+  educationId: string;
+  title: string;
+  description: string;
+  fromWhere: string;
+};
+export type Experience = {
+  educationId: string;
+  title: string;
+  description: string;
+  fromWhere: string;
+};
 export function voterPersonalInfoFromList(list: any[]): VoterPersonalInfo {
   return {
     first_name: list[0],

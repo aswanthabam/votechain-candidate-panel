@@ -2,18 +2,19 @@ import React, { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { generateRandomKey } from "../../utils/utils";
 import { useSystemSettings } from "../../hooks/useSystemSettings";
-import { decrypt } from "../../utils/encryption";
-import axios from "axios";
+import { getCandidateProfile } from "../../services/api_services/candidate";
+import { CandidateProfile } from "../../utils/types";
 interface DashboardProps {}
 export const Dashboard: React.FC<DashboardProps> = () => {
-  const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [k1, setK1] = useState<string | null>(null);
+  const [, setSocket] = useState<WebSocket | null>(null);
+  const [, setK1] = useState<string | null>(null);
   const [, setK2] = useState<string | null>(null);
   const [code, setCode] = useState<string | null>(null);
   const { systemSettings } = useSystemSettings();
   const [codeScanned, setCodeScanned] = useState(false);
   const [accessKey, setAccessKey] = useState<string | null>(null);
-
+  const [candidateProfile, setCanidateProfile] =
+    useState<CandidateProfile | null>(null);
   useEffect(() => {
     var access_key = localStorage.getItem("access_key");
     if (access_key !== null) {
@@ -79,26 +80,105 @@ export const Dashboard: React.FC<DashboardProps> = () => {
     //eslint-disable-next-line
   }, []);
   useEffect(() => {
-    getCandidateProfile();
+    getCandidateProfile(systemSettings!.localServer).then((res) => {
+      console.log(res);
+      setCanidateProfile(res);
+    });
   }, [accessKey]);
 
-  function getCandidateProfile() {
-    if (accessKey) {
-      var url =
-        systemSettings?.localServer +
-        `/api/candidate/profile/?ACCESS_KEY=${accessKey}`;
-      console.log(url);
-      axios.get(url).then((res) => {
-        console.log(res);
-      });
-    }
-  }
   return accessKey ? (
-    <div className="flex items-center h-full pt-20 justify-center gap-20">
-      <a href="/dashboard/edit-profile" className="btn btn-primary">
-        Edit Profile
-      </a>
-    </div>
+    candidateProfile ? (
+      <div className="flex flex-col pt-20 justify-center gap-20 items-start">
+        <div className="flex justify-start gap-16 items-center">
+          <img
+            style={{ width: "100px", height: "100px" }}
+            src={
+              candidateProfile.photo ??
+              "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png"
+            }
+            alt="profile"
+            className="w-40 h-40 rounded-full"
+          />
+          <h2 className="text-5xl font-bold text-center">
+            Welcome <i>{candidateProfile.name},</i>
+          </h2>
+        </div>
+        <div className="flex justify-start gap-16 items-center">
+          <a href="/dashboard/edit-profile" className="btn btn-primary">
+            Edit Profile
+          </a>
+        </div>
+        <div className="flex flex-col items-start justify-start gap-5 w-full">
+          <h3 className="text-2xl font-bold underline underline-offset-8">
+            {candidateProfile.name}
+          </h3>
+          <h4>About Candidate</h4>
+          <p>{candidateProfile.about}</p>
+          <h4 className="font-bold">Education</h4>
+          <table className="table w-full table-zebra">
+            <thead>
+              <tr className=" bg-slate-200">
+                <th>Title</th>
+                <th>From Where</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {candidateProfile.education.map((edu) => (
+                <tr>
+                  <td>{edu.title}</td>
+                  <td>{edu.fromWhere}</td>
+                  <td>{edu.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <h4 className="font-bold">Experience</h4>
+          <table className="table w-full table-zebra">
+            <thead>
+              <tr className=" bg-slate-200">
+                <th>Title</th>
+                <th>From Where</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {candidateProfile.experience.map((edu) => (
+                <tr>
+                  <td>{edu.title}</td>
+                  <td>{edu.fromWhere}</td>
+                  <td>{edu.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <h4 className="font-bold">Documents</h4>
+          <table className="table w-full table-zebra">
+            <thead>
+              <tr className=" bg-slate-200">
+                <th>Title</th>
+                <th>Link</th>
+              </tr>
+            </thead>
+            <tbody>
+              {candidateProfile.documents.map((edu) => (
+                <tr>
+                  <td>{edu.title}</td>
+                  <td>
+                    <a href={systemSettings?.localServer + edu.link}>
+                      {edu.link}
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        "
+      </div>
+    ) : (
+      <h1>Loading ...</h1>
+    )
   ) : (
     <div className="flex items-center h-full pt-20 justify-center gap-20">
       <div className="flex h-full items-center flex-col justify-center text-center w-auto">

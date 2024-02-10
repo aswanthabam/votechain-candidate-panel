@@ -41,6 +41,7 @@ export const Login = () => {
   const [selectedElection, setSelectedElection] = useState<Election | null>(
     null
   );
+  const [, setName] = useState<string | null>(null);
 
   useEffect(() => {
     getStates().then((res) => {
@@ -85,6 +86,15 @@ export const Login = () => {
   const submitUserQRData = (data: VoterInfo) => {
     console.log(data);
     setVoterInfo(data);
+    console.log(data);
+    (window as any).voterInfo = data;
+    setName(
+      data.personal_info.first_name +
+        " " +
+        data.personal_info.middle_name +
+        " " +
+        data.personal_info.last_name
+    );
     setStep(1);
   };
 
@@ -128,13 +138,18 @@ export const Login = () => {
         if (data.type == "result") {
           if (data.data.status == "success") {
             setStep(10);
-            console.log("Access key received: ", data.data.value);
-            localStorage.setItem("access_key", data.data.value);
+            console.log("Access key received: ", data.data.access_key);
+            localStorage.setItem("access_key", data.data.access_key);
+
+            console.log(data.data.name);
             axios
               .post(
                 systemSettings?.localServer +
                   "/api/candidate/register/?ACCESS_KEY=" +
-                  data.data.value
+                  data.data.access_key,
+                {
+                  name: data.data.name,
+                }
               )
               .then((res) => {
                 console.log(res);

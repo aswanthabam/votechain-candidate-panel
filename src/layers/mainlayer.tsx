@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
-import { Outlet } from "react-router-dom";
 import SideBar from "../components/sidebar/SideBar";
 import { Web3Provider } from "./web3layer";
 import { DialogLayer } from "./dialoglayer";
 import { useSystemSettings } from "../hooks/useSystemSettings";
 import axios from "axios";
 // import { KeyProvider } from "./keyprovider";
-
-const MainLayer: React.FC = () => {
+interface MainLayerProps {
+  children: string | JSX.Element | JSX.Element[] | (() => JSX.Element);
+}
+const MainLayer: React.FC<MainLayerProps> = ({ children }) => {
   const { setSystemSettings } = useSystemSettings();
   useEffect(() => {
     console.log("MainLayer mounted");
@@ -28,7 +29,8 @@ const MainLayer: React.FC = () => {
         <DialogLayer>
           <Web3Provider>
             {/* <KeyProvider> */}
-            <Outlet />
+            {/* <Outlet /> */}
+            {children}
             {/* </KeyProvider> */}
           </Web3Provider>
         </DialogLayer>

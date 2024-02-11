@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Education } from "../../utils/types";
-import { useDialog } from "../../hooks/useDialog";
+import React, { useState } from "react";
 import { useSystemSettings } from "../../hooks/useSystemSettings";
 import axios from "axios";
 

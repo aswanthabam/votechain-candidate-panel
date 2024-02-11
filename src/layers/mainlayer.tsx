@@ -1,5 +1,4 @@
-import React, { ReactNode, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import React, { useEffect } from "react";
 import SideBar from "../components/sidebar/SideBar";
 import { Web3Provider } from "./web3layer";
 import { DialogLayer } from "./dialoglayer";

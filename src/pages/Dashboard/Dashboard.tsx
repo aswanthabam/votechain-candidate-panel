@@ -3,7 +3,7 @@ import QRCode from "react-qr-code";
 import { generateRandomKey } from "../../utils/utils";
 import { useSystemSettings } from "../../hooks/useSystemSettings";
 import { getCandidateProfile } from "../../services/api_services/candidate";
-import { CandidateProfile, Education } from "../../utils/types";
+import { CandidateProfile } from "../../utils/types";
 import { useDialog } from "../../hooks/useDialog";
 import {
   AddEducation,

@@ -15,13 +15,17 @@ function App() {
         <ContractStateProvider>
           {/* <KeyStateProvider> */}
           <DialogStateProvider>
-            <Routes>
-              <Route path="/" element={<MainLayer />}>
-                <Route path="/" element={<Login />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="*" element={<h1>Unknown Page</h1>} />
-              </Route>
-            </Routes>
+            <MainLayer>
+              <Routes>
+                <Route path="/">
+                  <Route path="/" element={<Login />} />
+                  <Route path="/dashboard">
+                    <Route path="" element={<Dashboard />} />
+                  </Route>
+                  <Route path="*" element={<h1>Unknown Page</h1>} />
+                </Route>
+              </Routes>
+            </MainLayer>
           </DialogStateProvider>
           {/* </KeyStateProvider> */}
         </ContractStateProvider>

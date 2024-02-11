@@ -3,7 +3,15 @@ import QRCode from "react-qr-code";
 import { generateRandomKey } from "../../utils/utils";
 import { useSystemSettings } from "../../hooks/useSystemSettings";
 import { getCandidateProfile } from "../../services/api_services/candidate";
-import { CandidateProfile } from "../../utils/types";
+import { CandidateProfile, Education } from "../../utils/types";
+import { useDialog } from "../../hooks/useDialog";
+import {
+  AddEducation,
+  AddExperience,
+  EditAbout,
+  UploadDocument,
+  UploadProfilePicture,
+} from "./EditProfile";
 interface DashboardProps {}
 export const Dashboard: React.FC<DashboardProps> = () => {
   const [, setSocket] = useState<WebSocket | null>(null);
@@ -15,6 +23,8 @@ export const Dashboard: React.FC<DashboardProps> = () => {
   const [accessKey, setAccessKey] = useState<string | null>(null);
   const [candidateProfile, setCanidateProfile] =
     useState<CandidateProfile | null>(null);
+  const { setDialog, showDialog, setButtons, hideDialog } = useDialog();
+  const [reload, setReload] = useState(false);
   useEffect(() => {
     var access_key = localStorage.getItem("access_key");
     if (access_key !== null) {
@@ -84,95 +94,226 @@ export const Dashboard: React.FC<DashboardProps> = () => {
       console.log(res);
       setCanidateProfile(res);
     });
-  }, [accessKey]);
+  }, [accessKey, reload]);
 
   return accessKey ? (
     candidateProfile ? (
-      <div className="flex flex-col pt-20 justify-center gap-20 items-start">
+      <div className="flex flex-col pt-20 justify-center gap-10 items-start">
         <div className="flex justify-start gap-16 items-center">
-          <img
-            style={{ width: "100px", height: "100px" }}
-            src={
-              candidateProfile.photo ??
-              "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png"
-            }
-            alt="profile"
-            className="w-40 h-40 rounded-full"
-          />
-          <h2 className="text-5xl font-bold text-center">
-            Welcome <i>{candidateProfile.name},</i>
-          </h2>
+          <div className=" relative">
+            <img
+              style={{ width: "200px", height: "200px", objectFit: "cover" }}
+              src={
+                candidateProfile.photo
+                  ? systemSettings?.localServer + candidateProfile.photo
+                  : "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png"
+              }
+              alt="profile"
+              className="w-40 h-40 rounded-full"
+            />
+            <i
+              onClick={() => {
+                setDialog(
+                  <UploadProfilePicture
+                    hideDialog={() => {
+                      setReload(!reload);
+                      hideDialog();
+                    }}
+                  />
+                );
+                setButtons([]);
+                showDialog();
+              }}
+              className=" absolute bi bi-pencil bottom-2 right-2 bg-emerald-600 shadow shadow-black z-50 flex items-center justify-center btn-circle w-10 h-10  p-3"
+            ></i>
+          </div>
+          <div className="flex flex-col items-start gap-10">
+            <h2 className="text-5xl font-bold text-center">
+              Welcome <i>{candidateProfile.name},</i>
+            </h2>
+            <span className="text-xl">
+              Here you can edit your candidate profile, like about section,
+              profile photo, education, experience etc
+            </span>
+          </div>
         </div>
-        <div className="flex justify-start gap-16 items-center">
-          <a href="/dashboard/edit-profile" className="btn btn-primary">
-            Edit Profile
-          </a>
-        </div>
-        <div className="flex flex-col items-start justify-start gap-5 w-full">
-          <h3 className="text-2xl font-bold underline underline-offset-8">
-            {candidateProfile.name}
-          </h3>
-          <h4>About Candidate</h4>
-          <p>{candidateProfile.about}</p>
-          <h4 className="font-bold">Education</h4>
-          <table className="table w-full table-zebra">
-            <thead>
-              <tr className=" bg-slate-200">
-                <th>Title</th>
-                <th>From Where</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              {candidateProfile.education.map((edu) => (
-                <tr>
-                  <td>{edu.title}</td>
-                  <td>{edu.fromWhere}</td>
-                  <td>{edu.description}</td>
+        <h2 className="text-3xl font-bold m-0 underline underline-offset-8">
+          Your Profile
+        </h2>
+        <div className="flex flex-col items-start justify-start gap-5 w-full bg-slate-200 p-10 rounded-xl m-0">
+          <div className="flex justify-between w-full">
+            <h4 className="text-2xl font-bold underline underline-offset-8">
+              About Candidate
+            </h4>
+            <button
+              onClick={() => {
+                setDialog(
+                  <EditAbout
+                    hideDialog={() => {
+                      setReload(!reload);
+                      hideDialog();
+                    }}
+                  />
+                );
+                setButtons([]);
+                showDialog();
+              }}
+              className="btn btn-neutral pt-0 pb-0 pl-3 pr-3"
+            >
+              <i className="bi bi-pencil"></i> Edit About
+            </button>
+          </div>
+          <p>
+            {candidateProfile.about
+              ? candidateProfile.about
+              : " * You are not yet added your about section, click on the edit about button above to add an about section"}
+          </p>
+          <div className="flex justify-between w-full">
+            <h4 className="text-2xl font-bold underline underline-offset-8">
+              Your Education
+            </h4>
+            <button
+              onClick={() => {
+                setDialog(
+                  <AddEducation
+                    hideDialog={() => {
+                      setReload(!reload);
+                      hideDialog();
+                    }}
+                  />
+                );
+                setButtons([]);
+                showDialog();
+              }}
+              className="btn btn-neutral pt-0 pb-0 pl-3 pr-3"
+            >
+              <i className="bi bi-plus-lg"></i> Add Education
+            </button>
+          </div>
+          {candidateProfile.education.length > 0 ? (
+            <table className="table w-full table-zebra">
+              <thead>
+                <tr className=" bg-slate-200">
+                  <th>Title</th>
+                  <th>From Where</th>
+                  <th>Description</th>
+                  <th>Delete</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <h4 className="font-bold">Experience</h4>
-          <table className="table w-full table-zebra">
-            <thead>
-              <tr className=" bg-slate-200">
-                <th>Title</th>
-                <th>From Where</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              {candidateProfile.experience.map((edu) => (
-                <tr>
-                  <td>{edu.title}</td>
-                  <td>{edu.fromWhere}</td>
-                  <td>{edu.description}</td>
+              </thead>
+              <tbody>
+                {candidateProfile.education.map((edu) => (
+                  <tr>
+                    <td>{edu.title}</td>
+                    <td>{edu.fromWhere}</td>
+                    <td>{edu.description}</td>
+                    <td className="w-auto">
+                      <i onClick={() => {}} className="bi bi-trash3"></i>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            " * You are not yet added your education, click on the add education button above to add an education"
+          )}
+          <div className="flex justify-between w-full">
+            <h4 className="text-2xl font-bold underline underline-offset-8">
+              Your Experience
+            </h4>
+            <button
+              onClick={() => {
+                setDialog(
+                  <AddExperience
+                    hideDialog={() => {
+                      setReload(!reload);
+                      hideDialog();
+                    }}
+                  />
+                );
+                setButtons([]);
+                showDialog();
+              }}
+              className="btn btn-neutral pt-0 pb-0 pl-3 pr-3"
+            >
+              <i className="bi bi-plus-lg"></i> Add Experience
+            </button>
+          </div>
+          {candidateProfile.experience.length > 0 ? (
+            <table className="table w-full table-zebra">
+              <thead>
+                <tr className=" bg-slate-200">
+                  <th>Title</th>
+                  <th>From Where</th>
+                  <th>Description</th>
+                  <th>Delete</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <h4 className="font-bold">Documents</h4>
-          <table className="table w-full table-zebra">
-            <thead>
-              <tr className=" bg-slate-200">
-                <th>Title</th>
-                <th>Link</th>
-              </tr>
-            </thead>
-            <tbody>
-              {candidateProfile.documents.map((edu) => (
-                <tr>
-                  <td>{edu.title}</td>
-                  <td>
-                    <a href={systemSettings?.localServer + edu.link}>
-                      {edu.link}
-                    </a>
-                  </td>
+              </thead>
+              <tbody>
+                {candidateProfile.experience.map((edu) => (
+                  <tr>
+                    <td>{edu.title}</td>
+                    <td>{edu.fromWhere}</td>
+                    <td>{edu.description}</td>
+                    <td className="w-auto">
+                      <i onClick={() => {}} className="bi bi-trash3"></i>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            " * You are not yet added your education, click on the add education button above to add an education"
+          )}
+          <div className="flex justify-between w-full">
+            <h4 className="text-2xl font-bold underline underline-offset-8">
+              Documents Uploaded
+            </h4>
+            <button
+              onClick={() => {
+                setDialog(
+                  <UploadDocument
+                    hideDialog={() => {
+                      setReload(!reload);
+                      hideDialog();
+                    }}
+                  />
+                );
+                setButtons([]);
+                showDialog();
+              }}
+              className="btn btn-neutral pt-0 pb-0 pl-3 pr-3"
+            >
+              <i className="bi bi-plus-lg"></i> Upload Document
+            </button>
+          </div>
+          {candidateProfile.documents.length > 0 ? (
+            <table className="table w-full table-zebra">
+              <thead>
+                <tr className=" bg-slate-200">
+                  <th>Title</th>
+                  <th>Link</th>
+                  <th>Delete</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {candidateProfile.documents.map((edu) => (
+                  <tr>
+                    <td>{edu.title}</td>
+                    <td>
+                      <a href={systemSettings?.localServer + edu.link}>
+                        {systemSettings?.localServer + edu.link}
+                      </a>
+                    </td>
+                    <td className="w-auto">
+                      <i onClick={() => {}} className="bi bi-trash3"></i>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            " * You are not yet added your education, click on the add education button above to add an education"
+          )}
         </div>
         "
       </div>

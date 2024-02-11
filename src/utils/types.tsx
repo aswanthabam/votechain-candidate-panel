@@ -125,7 +125,7 @@ export type Documents = {
   link: string;
 };
 export type Education = {
-  educationId: string;
+  educationId: string | null;
   title: string;
   description: string;
   fromWhere: string;

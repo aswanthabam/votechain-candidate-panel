@@ -6,7 +6,7 @@ interface Web3ProviderProps {
 }
 
 export const DialogLayer: React.FC<Web3ProviderProps> = ({ children }) => {
-  const { child } = useDialog();
+  const { child, buttons } = useDialog();
   return (
     <>
       <dialog id="my_modal_1" className="modal z-10">
@@ -15,7 +15,11 @@ export const DialogLayer: React.FC<Web3ProviderProps> = ({ children }) => {
           <div className="modal-action">
             <form method="dialog">
               {/* if there is a button in form, it will close the modal */}
-              <button className="btn">Close</button>
+              {buttons ? (
+                <>{buttons.map((btn) => btn)}</>
+              ) : (
+                <button className="btn">Close</button>
+              )}
             </form>
           </div>
         </div>

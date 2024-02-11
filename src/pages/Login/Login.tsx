@@ -149,6 +149,7 @@ export const Login = () => {
                   data.data.access_key,
                 {
                   name: data.data.name,
+                  candidateAddress: data.data.candidateAddress,
                 }
               )
               .then((res) => {

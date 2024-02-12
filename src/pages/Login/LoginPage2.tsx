@@ -46,77 +46,87 @@ export const LoginPage2: React.FC<LoginPage2Props> = ({
         candidate.
       </p>
       <div className="flex flex-col items-center justify-start gap-5 w-full">
-        <select
-          onChange={(e) => {
-            getDistricts(null, e.target.value).then((res) => {
-              setDistricts(res ? res : []);
-            });
-          }}
-          className="select select-bordered w-full max-w-xs"
-        >
-          <option disabled selected>
-            Select State *
-          </option>
-          {states.map((state) => (
-            <option value={state.id}>{state.name}</option>
-          ))}
-        </select>
-        <select
-          onChange={(e) => {
-            getConstituencies(null, e.target.value).then((res) => {
-              setConstituencies(res ? res : []);
-            });
-          }}
-          className="select select-bordered w-full max-w-xs"
-        >
-          <option disabled selected>
-            Select District *
-          </option>
-          {districts.map((state) => (
-            <option value={state.id}>{state.name}</option>
-          ))}
-        </select>
-        <select
-          onChange={(e) => {
-            var c =
-              constituencies.find(
-                (constituency) => constituency.id === e.target.value
-              ) ?? null;
-            setConstituency(c);
-            onChange(c!);
-          }}
-          className="select select-bordered w-full max-w-xs"
-        >
-          <option disabled selected>
-            Select Constituency *
-          </option>
-          {constituencies.map((state) => (
-            <option value={state.id}>{state.name}</option>
-          ))}
-        </select>
+        <div className="flex justify-around gap-10">
+          <select
+            onChange={(e) => {
+              getDistricts(null, e.target.value).then((res) => {
+                setDistricts(res ? res : []);
+              });
+            }}
+            className="select select-bordered w-full max-w-xs"
+          >
+            <option disabled selected>
+              Select State *
+            </option>
+            {states.map((state) => (
+              <option value={state.id}>{state.name}</option>
+            ))}
+          </select>
+          <select
+            onChange={(e) => {
+              getConstituencies(null, e.target.value).then((res) => {
+                setConstituencies(res ? res : []);
+              });
+            }}
+            className="select select-bordered w-full max-w-xs"
+          >
+            <option disabled selected>
+              Select District *
+            </option>
+            {districts.map((state) => (
+              <option value={state.id}>{state.name}</option>
+            ))}
+          </select>
+          <select
+            onChange={(e) => {
+              var c =
+                constituencies.find(
+                  (constituency) => constituency.id === e.target.value
+                ) ?? null;
+              setConstituency(c);
+              onChange(c!);
+            }}
+            className="select select-bordered w-full max-w-xs"
+          >
+            <option disabled selected>
+              Select Constituency *
+            </option>
+            {constituencies.map((state) => (
+              <option value={state.id}>{state.name}</option>
+            ))}
+          </select>
+        </div>
         {election && (
           <>
             <h1 className="text-2xl font-bold text-center">
               Active Election in this constituency
             </h1>
-            {election.map((election) => (
-              <div className={""}>
-                <h2>
-                  {election.name} (ID : {election.id.toString()})
-                </h2>
-                <h2>About Election : {election.description}</h2>
-                <h2>Start On : {election.start_date.toLocaleString()}</h2>
-                <h2>End On : {election.end_date.toLocaleString()}</h2>
-                <button
-                  className="btn btn-primary mb-10"
-                  onClick={() => {
-                    onSubmit(election);
-                  }}
-                >
-                  Submit
-                </button>
-              </div>
-            ))}
+            <div className=" grid grid-cols-3  gap-7 mb-10">
+              {election.map((election) => (
+                <div className="bg-slate-400 p-7 rounded-xl">
+                  <h2>
+                    <h2 className="text-xl font-bold mb-3">
+                      {election.name} (ID : {election.id.toString()})
+                    </h2>
+                  </h2>
+                  <p className="mb-3">{election.description}</p>
+                  <h2>
+                    Start On : <b>{election.start_date.toLocaleString()}</b>
+                  </h2>
+                  <h2>
+                    End On : <b>{election.end_date.toLocaleString()}</b>
+                  </h2>
+                  <button
+                    className="btn btn-primary mt-5 w-full"
+                    onClick={() => {
+                      onSubmit(election);
+                    }}
+                  >
+                    Participate in this Election
+                  </button>
+                </div>
+              ))}
+            </div>
           </>
         )}
       </div>

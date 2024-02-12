@@ -119,6 +119,11 @@ export type CandidateProfile = {
   education: Education[];
   experience: Experience[];
   documents: Documents[];
+  party: Party;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  logo: string | null;
 };
 export type Documents = {
   title: string;
@@ -136,6 +141,13 @@ export type Experience = {
   description: string;
   fromWhere: string;
 };
+
+export type Party = {
+  partyId: string;
+  name: string;
+  logo: string;
+};
+
 export function voterPersonalInfoFromList(list: any[]): VoterPersonalInfo {
   return {
     first_name: list[0],

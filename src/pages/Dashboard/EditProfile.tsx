@@ -405,9 +405,9 @@ export const EditContact: React.FC<EditContactProps> = ({ hideDialog }) => {
           />
         </label>
         <label className="form-control mt-5">
-          <input
+          <textarea
             required
-            className="textarea textarea-bordered"
+            className="textarea textarea-bordered h-24"
             placeholder="Address"
             // value={oldAddress ?? ""}
             onChange={(e) => {

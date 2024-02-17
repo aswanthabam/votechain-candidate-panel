@@ -21,6 +21,7 @@ export const LoginPage4: React.FC<LoginPage4Props> = ({
 }) => {
   const { systemSettings } = useSystemSettings();
   const [logoData, setLogoData] = React.useState<string | null>(null);
+  const [confirmed, setConfirmed] = React.useState(false);
   useEffect(() => {
     console.log("LoginPage4 mounted");
     if (logo) {
@@ -225,8 +226,17 @@ export const LoginPage4: React.FC<LoginPage4Props> = ({
               </tbody>
             </table>
           </div>
-          <button onClick={onConfirm} className="btn btn-primary mb-10">
-            Confirm and Register
+          <button
+            onClick={() => {
+              onConfirm();
+              setConfirmed(true);
+            }}
+            className="btn btn-primary mb-10"
+          >
+            Confirm and Register{" "}
+            {confirmed && (
+              <span className="loading loading-dots loading-xs"></span>
+            )}
           </button>
         </div>
       </div>

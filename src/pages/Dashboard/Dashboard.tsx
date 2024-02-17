@@ -188,10 +188,7 @@ export const Dashboard: React.FC<DashboardProps> = () => {
           <div className="overflow-x-auto w-full gap-5 flex-col flex h-full mb-5">
             <div className="flex items-center w-full gap-10">
               <img
-                src={
-                  systemSettings?.localServer +
-                  (candidateProfile.logo ?? candidateProfile.party?.logo)
-                }
+                src={systemSettings?.localServer + candidateProfile.logo!}
                 style={{
                   width: 100,
                   height: 100,

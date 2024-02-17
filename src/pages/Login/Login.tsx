@@ -45,7 +45,7 @@ export const Login = () => {
   );
   const [, setName] = useState<string | null>(null);
   var [party, setParty] = useState<Party | null>(null);
-  var [logo, setLogo] = useState<File | null>(null);
+  let [logo, setLogo] = useState<File | null>(null);
 
   useEffect(() => {
     getStates().then((res) => {
@@ -91,6 +91,7 @@ export const Login = () => {
     party = p;
     logo = l;
     (window as any).party = party;
+    (window as any).logo = logo;
     setParty(p);
     setLogo(l);
     console.log("PArtty selected,", p, l);
@@ -98,12 +99,15 @@ export const Login = () => {
   };
   const updateApiData = (name: string, candidateAddress: string) => {
     party = (window as any).party;
+    logo = (window as any).logo;
     (window as any).party = null;
+    (window as any).logo = null;
     var formData = new FormData();
     formData.append("name", name);
     formData.append("candidateAddress", candidateAddress);
     console.log("Party", party);
     party && formData.append("party", party.partyId);
+    console.log("Selected logo : ", logo);
     logo && formData.append("logo", logo);
 
     axios

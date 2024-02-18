@@ -21,6 +21,7 @@ export type Election = {
   start_date: Date;
   end_date: Date;
   constituency: string;
+  resultsPublished: boolean;
 };
 
 export type Contracts = {
@@ -113,6 +114,7 @@ export type AdminInfo = {
 export type CandidateProfile = {
   profileId: string;
   candidateId: string;
+  address: string;
   name: string;
   about: string | null;
   photo: string | null;
@@ -122,7 +124,7 @@ export type CandidateProfile = {
   party: Party;
   phone: string | null;
   email: string | null;
-  address: string | null;
+  candidateAddress: string | null;
   logo: string | null;
 };
 export type Documents = {
@@ -243,7 +245,7 @@ export function adminInfoFromList(list: any[]): AdminInfo | null {
 }
 
 export function electionFromList(list: any[]): Election | null {
-  if (list[1] === 0 || list[1] === "") {
+  if (list[0] == 0) {
     return null;
   }
   return {
@@ -253,5 +255,6 @@ export function electionFromList(list: any[]): Election | null {
     start_date: new Date(parseInt((list[3] as BigInt).toString())),
     end_date: new Date(parseInt((list[4] as BigInt).toString())),
     constituency: list[5],
-  };
+    resultsPublished: parseInt(list[6].toString()) == 0 ? false : true,
+  } as Election;
 }

@@ -3,7 +3,12 @@ import QRCode from "react-qr-code";
 import { generateRandomKey } from "../../utils/utils";
 import { useSystemSettings } from "../../hooks/useSystemSettings";
 import { getCandidateProfile } from "../../services/api_services/candidate";
-import { CandidateProfile } from "../../utils/types";
+import {
+  CandidateProfile,
+  Constituency,
+  Election,
+  electionFromList,
+} from "../../utils/types";
 import { useDialog } from "../../hooks/useDialog";
 import {
   AddEducation,
@@ -13,6 +18,9 @@ import {
   UploadDocument,
   UploadProfilePicture,
 } from "./EditProfile";
+import { useContracts } from "../../hooks/useContracts";
+import { getConstituencies } from "../../services/api_services/location";
+import { Link } from "react-router-dom";
 interface DashboardProps {}
 export const Dashboard: React.FC<DashboardProps> = () => {
   const [, setSocket] = useState<WebSocket | null>(null);
@@ -26,6 +34,13 @@ export const Dashboard: React.FC<DashboardProps> = () => {
     useState<CandidateProfile | null>(null);
   const { setDialog, showDialog, setButtons, hideDialog } = useDialog();
   const [reload, setReload] = useState(false);
+  const [nominatedElections, setNominatedElections] = useState<
+    (Election & { constituencyData: Constituency })[]
+  >([]);
+  const [nominatedElectionsLoaded, setNominatedElectionsLoaded] =
+    useState(false);
+
+  const { contracts } = useContracts();
   useEffect(() => {
     var access_key = localStorage.getItem("access_key");
     if (access_key !== null) {
@@ -96,6 +111,39 @@ export const Dashboard: React.FC<DashboardProps> = () => {
       setCanidateProfile(res);
     });
   }, [accessKey, reload]);
+  useEffect(() => {
+    contracts?.votechain?.methods.getMyNominations &&
+      (contracts?.votechain?.methods.getMyNominations as any)()
+        .call({ from: candidateProfile?.candidateAddress ?? "" })
+        .then(async (res: number[]) => {
+          var elections: (Election & { constituencyData: Constituency })[] = [];
+          for (var electionId of res) {
+            await (contracts?.votechain?.methods.elections as any)(electionId)
+              .call()
+              .then(async (electionData: any) => {
+                var election = electionFromList(electionData);
+                var r: Constituency[] = (await getConstituencies(
+                  null,
+                  null,
+                  election?.constituency.toString()
+                ))!;
+                if (election) {
+                  (
+                    election as Election & {
+                      constituencyData: Constituency;
+                    }
+                  ).constituencyData = r[0];
+
+                  elections.push(
+                    election as Election & { constituencyData: Constituency }
+                  );
+                }
+              });
+          }
+          setNominatedElections(elections);
+          setNominatedElectionsLoaded(true);
+        });
+  }, [candidateProfile, contracts]);
 
   return accessKey ? (
     candidateProfile ? (
@@ -137,6 +185,54 @@ export const Dashboard: React.FC<DashboardProps> = () => {
               profile photo, education, experience etc
             </span>
           </div>
+        </div>
+        <h2 className="text-3xl font-bold m-0 underline underline-offset-8">
+          Your Nominations
+        </h2>
+        <div className="flex flex-col items-start justify-start gap-5 w-full bg-slate-200 p-5 rounded-xl m-0">
+          {nominatedElectionsLoaded ? (
+            nominatedElections.length > 0 ? (
+              <table className="table w-full table-zebra">
+                <thead>
+                  <tr className=" bg-slate-200">
+                    <th>Election Name</th>
+                    <th>Constituency</th>
+                    <th>Withdraw</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {nominatedElections.map((election) => {
+                    return (
+                      election && (
+                        <tr>
+                          <td>{election.name ?? ""}</td>
+                          <td>{election.constituencyData.name ?? ""}</td>
+                          <td>
+                            <Link
+                              to={
+                                "/dashboard/withdraw-nomination/" + election.id
+                              }
+                            >
+                              <button className="btn btn-danger pt-0 pb-0 pl-2 pr-2 text-xs">
+                                Withdraw Nomination
+                              </button>
+                            </Link>
+                          </td>
+                        </tr>
+                      )
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              "You have not nominated for any election yet"
+            )
+          ) : (
+            <div className="w-full flex justify-center items-center">
+              <span className="loading loading-lg"></span>&nbsp; &nbsp; Loading
+              ..
+            </div>
+          )}
         </div>
         <h2 className="text-3xl font-bold m-0 underline underline-offset-8">
           Your Profile

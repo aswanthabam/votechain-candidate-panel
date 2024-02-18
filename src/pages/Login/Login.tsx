@@ -57,8 +57,12 @@ export const Login = () => {
     console.log("Submitting data");
     console.log("SElected Election", selectedElection);
     var data = {
-      election: selectedElection,
+      election: {
+        selectedElection,
+        id: parseInt(selectedElection?.id.toString() ?? ""),
+      },
     };
+    console.log(data);
     var _data = JSON.stringify({
       token: k1,
       type: "send_back",

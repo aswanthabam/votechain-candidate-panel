@@ -366,3 +366,91 @@ export const UploadProfilePicture: React.FC<UploadProfilePictureProps> = ({
     </div>
   );
 };
+
+interface EditContactProps {
+  hideDialog: () => void;
+}
+export const EditContact: React.FC<EditContactProps> = ({ hideDialog }) => {
+  const [phone, setPhone] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const [address, setAddress] = useState<string | null>(null);
+  const { systemSettings } = useSystemSettings();
+
+  return (
+    <div>
+      <h1 className="text-3xl font-bold underline underline-offset-8">
+        Edit Your Contact Details
+      </h1>
+      <div className="flex flex-col">
+        <label className="form-control mt-10">
+          <input
+            required
+            className="textarea textarea-bordered"
+            placeholder="Phone Number"
+            // value={oldPhone ?? ""}
+            onChange={(e) => {
+              setPhone(e.target.value);
+            }}
+          />
+        </label>
+        <label className="form-control mt-5">
+          <input
+            required
+            className="textarea textarea-bordered"
+            placeholder="Email ID"
+            // value={oldEmail ?? ""}
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+          />
+        </label>
+        <label className="form-control mt-5">
+          <textarea
+            required
+            className="textarea textarea-bordered h-24"
+            placeholder="Address"
+            // value={oldAddress ?? ""}
+            onChange={(e) => {
+              setAddress(e.target.value);
+            }}
+          />
+        </label>
+      </div>
+      <div className="flex justify-end mt-5">
+        <button
+          className="btn btn-neutral mr-2"
+          onClick={() => {
+            axios
+              .put(
+                `${
+                  systemSettings?.localServer
+                }/api/candidate/profile/?ACCESS_KEY=${localStorage.getItem(
+                  "access_key"
+                )}`,
+                {
+                  phone: phone,
+                  email: email,
+                  address: address,
+                }
+              )
+              .then((res) => {
+                console.log(res);
+                hideDialog();
+              });
+          }}
+        >
+          Save
+        </button>
+        <button
+          className="btn btn-neutral"
+          onClick={() => {
+            console.log("Closing dialog");
+            hideDialog();
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+};

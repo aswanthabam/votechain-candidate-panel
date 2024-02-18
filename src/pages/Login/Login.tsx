@@ -8,16 +8,18 @@ import {
   Constituency,
   District,
   Election,
+  Party,
   State,
   VoterInfo,
   electionFromList,
 } from "../../utils/types";
-import { LoginPage3 } from "./LoginPage4";
+import { LoginPage4 } from "./LoginPage4";
 import { getStates } from "../../services/api_services/location";
 import { useContracts } from "../../hooks/useContracts";
 import { SuccessLogin } from "./SuccessLogin";
 import { FailLogin } from "./FailLogin";
 import axios from "axios";
+import { LoginPage3 } from "./LoginPage3";
 
 export const Login = () => {
   const [code, setCode] = useState<string | null>(null);
@@ -42,6 +44,8 @@ export const Login = () => {
     null
   );
   const [, setName] = useState<string | null>(null);
+  var [party, setParty] = useState<Party | null>(null);
+  let [logo, setLogo] = useState<File | null>(null);
 
   useEffect(() => {
     getStates().then((res) => {
@@ -53,8 +57,12 @@ export const Login = () => {
     console.log("Submitting data");
     console.log("SElected Election", selectedElection);
     var data = {
-      election: selectedElection,
+      election: {
+        selectedElection,
+        id: parseInt(selectedElection?.id.toString() ?? ""),
+      },
     };
+    console.log(data);
     var _data = JSON.stringify({
       token: k1,
       type: "send_back",
@@ -83,6 +91,40 @@ export const Login = () => {
     // setStep(2);
   };
 
+  const onPartySelect = (p: Party | null, l: File | null) => {
+    party = p;
+    logo = l;
+    (window as any).party = party;
+    (window as any).logo = logo;
+    setParty(p);
+    setLogo(l);
+    console.log("PArtty selected,", p, l);
+    setStep(3);
+  };
+  const updateApiData = (name: string, candidateAddress: string) => {
+    party = (window as any).party;
+    logo = (window as any).logo;
+    (window as any).party = null;
+    (window as any).logo = null;
+    var formData = new FormData();
+    formData.append("name", name);
+    formData.append("candidateAddress", candidateAddress);
+    console.log("Party", party);
+    party && formData.append("party", party.partyId);
+    console.log("Selected logo : ", logo);
+    logo && formData.append("logo", logo);
+
+    axios
+      .post(
+        systemSettings?.localServer +
+          "/api/candidate/register/?ACCESS_KEY=" +
+          localStorage.getItem("access_key"),
+        formData
+      )
+      .then((res) => {
+        console.log(res);
+      });
+  };
   const submitUserQRData = (data: VoterInfo) => {
     console.log(data);
     setVoterInfo(data);
@@ -140,21 +182,8 @@ export const Login = () => {
             setStep(10);
             console.log("Access key received: ", data.data.access_key);
             localStorage.setItem("access_key", data.data.access_key);
-
+            updateApiData(data.data.name, data.data.candidateAddress);
             console.log(data.data.name);
-            axios
-              .post(
-                systemSettings?.localServer +
-                  "/api/candidate/register/?ACCESS_KEY=" +
-                  data.data.access_key,
-                {
-                  name: data.data.name,
-                  candidateAddress: data.data.candidateAddress,
-                }
-              )
-              .then((res) => {
-                console.log(res);
-              });
           } else {
             setStep(11);
             alert("Error occured while registering, please try again.");
@@ -207,13 +236,29 @@ export const Login = () => {
       case 2:
         return (
           <LoginPage3
+            prev={() => {
+              setStep(1);
+            }}
+            onSubmit={(p, l) => {
+              onPartySelect(p, l);
+            }}
+          ></LoginPage3>
+        );
+      case 3:
+        return (
+          <LoginPage4
+            prev={() => {
+              setStep(2);
+            }}
             onConfirm={() => {
               // redirect("/");
               onSubmit();
             }}
+            party={party}
+            logo={logo}
             info={voterInfo!}
             constituency={constituency!}
-          ></LoginPage3>
+          ></LoginPage4>
         );
       case 10:
         return <SuccessLogin> </SuccessLogin>;

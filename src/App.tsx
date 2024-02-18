@@ -7,6 +7,7 @@ import Web3StateProvider from "./hooks/useWeb3";
 import MainLayer from "./layers/mainlayer";
 import { Login } from "./pages/Login/Login";
 import { Dashboard } from "./pages/Dashboard/Dashboard";
+import { WithdrawNomination } from "./pages/Dashboard/WithdrawNomination";
 
 function App() {
   return (
@@ -21,6 +22,10 @@ function App() {
                   <Route path="/" element={<Login />} />
                   <Route path="/dashboard">
                     <Route path="" element={<Dashboard />} />
+                    <Route
+                      path="withdraw-nomination/:id/"
+                      element={<WithdrawNomination />}
+                    />
                   </Route>
                   <Route path="*" element={<h1>Unknown Page</h1>} />
                 </Route>

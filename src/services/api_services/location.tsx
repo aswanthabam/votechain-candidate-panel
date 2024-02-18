@@ -46,12 +46,14 @@ export const getStates = async (
 
 export const getConstituencies = async (
   search: string | null = null,
-  district_id: string | null = null
+  district_id: string | null = null,
+  constituency_id: string | null = null
 ): Promise<Constituency[] | null> => {
   try {
     const response = await publicRouter.get(
       "/api/location/constituencies/list/?" +
         (search ? `search=${search}` : "") +
+        (constituency_id ? `&constituency_id=${constituency_id}` : "") +
         (district_id ? `&district_id=${district_id}` : "")
     );
     if (

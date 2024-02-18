@@ -39,6 +39,11 @@ export const Dashboard: React.FC<DashboardProps> = () => {
   >([]);
   const [nominatedElectionsLoaded, setNominatedElectionsLoaded] =
     useState(false);
+  const [candidateElections, setCandidateElections] = useState<
+    (Election & { constituencyData: Constituency })[]
+  >([]);
+  const [candidateElectionsLoaded, setCandidateElectionsLoaded] =
+    useState<boolean>(false);
 
   const { contracts } = useContracts();
   useEffect(() => {
@@ -143,6 +148,37 @@ export const Dashboard: React.FC<DashboardProps> = () => {
           setNominatedElections(elections);
           setNominatedElectionsLoaded(true);
         });
+    contracts?.votechain?.methods.getMyElections &&
+      (contracts?.votechain?.methods.getMyElections as any)()
+        .call({ from: candidateProfile?.candidateAddress ?? "" })
+        .then(async (res: number[]) => {
+          var elections: (Election & { constituencyData: Constituency })[] = [];
+          for (var electionId of res) {
+            await (contracts?.votechain?.methods.elections as any)(electionId)
+              .call()
+              .then(async (electionData: any) => {
+                var election = electionFromList(electionData);
+                var r: Constituency[] = (await getConstituencies(
+                  null,
+                  null,
+                  election?.constituency.toString()
+                ))!;
+                if (election) {
+                  (
+                    election as Election & {
+                      constituencyData: Constituency;
+                    }
+                  ).constituencyData = r[0];
+
+                  elections.push(
+                    election as Election & { constituencyData: Constituency }
+                  );
+                }
+              });
+          }
+          setCandidateElections(elections);
+          setCandidateElectionsLoaded(true);
+        });
   }, [candidateProfile, contracts]);
 
   return accessKey ? (
@@ -190,13 +226,18 @@ export const Dashboard: React.FC<DashboardProps> = () => {
           Your Nominations
         </h2>
         <div className="flex flex-col items-start justify-start gap-5 w-full bg-slate-200 p-5 rounded-xl m-0">
-          {nominatedElectionsLoaded ? (
-            nominatedElections.length > 0 ? (
+          {nominatedElectionsLoaded && candidateElectionsLoaded ? (
+            nominatedElections.length < 1 && candidateElections.length < 1 ? (
+              "You have not nominated for any election yet"
+            ) : (
               <table className="table w-full table-zebra">
                 <thead>
-                  <tr className=" bg-slate-200">
+                  <tr className=" bg-slate-400">
                     <th>Election Name</th>
                     <th>Constituency</th>
+                    <th>Nomination status</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
                     <th>Withdraw</th>
                   </tr>
                 </thead>
@@ -207,6 +248,11 @@ export const Dashboard: React.FC<DashboardProps> = () => {
                         <tr>
                           <td>{election.name ?? ""}</td>
                           <td>{election.constituencyData.name ?? ""}</td>
+                          <td>Unverified</td>
+                          <td>
+                            {new Date(election.start_date).toDateString()}
+                          </td>
+                          <td>{new Date(election.end_date).toDateString()}</td>
                           <td>
                             <Link
                               to={
@@ -222,10 +268,26 @@ export const Dashboard: React.FC<DashboardProps> = () => {
                       )
                     );
                   })}
+                  {candidateElections.map((election) => {
+                    return (
+                      election && (
+                        <tr>
+                          <td>{election.name ?? ""}</td>
+                          <td>{election.constituencyData.name ?? ""}</td>
+                          <td>Verified</td>
+                          <td>
+                            {new Date(election.start_date).toDateString()}
+                          </td>
+                          <td>{new Date(election.end_date).toDateString()}</td>
+                          <td>
+                            <button className="btn btn-danger pt-0 pb-0 pl-2 pr-2 text-xs"></button>
+                          </td>
+                        </tr>
+                      )
+                    );
+                  })}
                 </tbody>
               </table>
-            ) : (
-              "You have not nominated for any election yet"
             )
           ) : (
             <div className="w-full flex justify-center items-center">

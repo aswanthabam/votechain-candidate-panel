@@ -117,8 +117,9 @@ export const Dashboard: React.FC<DashboardProps> = () => {
     });
   }, [accessKey, reload]);
   useEffect(() => {
+    (window as any).contracts = contracts;
     contracts?.votechain?.methods.getMyNominations &&
-      (contracts?.votechain?.methods.getMyNominations as any)()
+      (contracts?.votechain?.methods.getMyNominations as any)(5)
         .call({ from: candidateProfile?.candidateAddress ?? "" })
         .then(async (res: number[]) => {
           var elections: (Election & { constituencyData: Constituency })[] = [];
